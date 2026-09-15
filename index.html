@@ -18,7 +18,8 @@
                 <h1 class="text-xl font-bold text-blue-400">Apk Layer Console</h1>
                 <p class="text-xs text-slate-400">Publish Globally via Firebase</p>
             </div>
-            <a href="store.html" class="px-3 py-1 bg-slate-950 border border-slate-800 rounded-lg text-xs font-semibold text-slate-300">Visit Store</a>
+            <!-- Visit Store Link without store.html -->
+            <a href="https://apk-layer.vercel.app/" target="_blank" class="px-3 py-1 bg-slate-950 border border-slate-800 rounded-lg text-xs font-semibold text-slate-300">Visit Store</a>
         </div>
 
         <form id="uploadForm" onsubmit="uploadApp(event)" class="space-y-4">
@@ -48,9 +49,11 @@
                 <input type="url" id="directDownloadUrl" placeholder="Or Paste Direct URL (https://...)" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm">
             </div>
 
-            <div id="progressContainer" class="hidden text-center py-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
+            <!-- 5 Minutes Timer Progress Box -->
+            <div id="progressContainer" class="hidden text-center py-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
                 <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading Files to Cloud...</p>
-                <p id="timerText" class="text-xs text-slate-400 font-mono">Please wait...</p>
+                <p id="timerText" class="text-sm text-blue-400 font-mono font-bold">Time Remaining: 05:00</p>
+                <p class="text-[10px] text-slate-500">Please do not refresh or close the page while uploading.</p>
             </div>
 
             <button type="submit" id="subBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-sm transition">
@@ -63,7 +66,7 @@
             <input type="text" id="shareLink" readonly class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300 text-center select-all">
             <div class="flex gap-2">
                 <button onclick="copyLink()" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-semibold">Copy Link</button>
-                <a id="openLinkBtn" href="#" target="_blank" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-semibold text-center">Open Store</a>
+                <a id="openLinkBtn" href="https://apk-layer.vercel.app/" target="_blank" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-semibold text-center">Open Store</a>
             </div>
         </div>
 
@@ -80,6 +83,7 @@
             const btn = document.getElementById('subBtn');
             const status = document.getElementById('status');
             const progressContainer = document.getElementById('progressContainer');
+            const timerText = document.getElementById('timerText');
             const resultBox = document.getElementById('resultBox');
             
             const appName = document.getElementById('appName').value.trim();
@@ -97,6 +101,16 @@
             status.innerText = "";
             resultBox.classList.add('hidden');
             progressContainer.classList.remove('hidden');
+
+            let timeLeft = 300;
+            let timerInterval = setInterval(() => {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                timerText.innerText = `Time Remaining: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                if (timeLeft > 0) {
+                    timeLeft--;
+                }
+            }, 1000);
 
             try {
                 const appId = Date.now().toString();
@@ -118,7 +132,7 @@
                 let fileSize = "Web Link";
 
                 if (apkFile) {
-                    status.innerText = "Uploading APK File...";
+                    status.innerText = "Uploading APK File to Internet Archive...";
                     await fetch(`https://s3.us.archive.org/${identifier}/${apkFile.name}`, {
                         method: 'PUT',
                         headers: {
@@ -151,11 +165,10 @@
                     body: JSON.stringify(newAppObj)
                 });
 
-                const storeUrl = window.location.href.replace('console.html', 'store.html');
+                const storeUrl = "https://apk-layer.vercel.app/";
                 const appShareLink = `${storeUrl}#app=${appId}`;
 
                 document.getElementById('shareLink').value = appShareLink;
-                document.getElementById('openLinkBtn').href = storeUrl;
                 resultBox.classList.remove('hidden');
                 status.innerText = "";
                 document.getElementById('uploadForm').reset();
@@ -163,6 +176,7 @@
                 status.innerText = "❌ Error: " + err.message;
                 status.className = "mt-4 text-center text-xs font-medium text-red-400";
             } finally {
+                clearInterval(timerInterval);
                 progressContainer.classList.add('hidden');
                 btn.disabled = false;
             }
