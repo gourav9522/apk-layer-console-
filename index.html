@@ -3,70 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apk Layer Console</title>
+    <title>ApkLayer Console - Premium Publisher</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gold-glow {
+            text-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
+        }
+        .emerald-border {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .emerald-border:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        }
+    </style>
 </head>
 <body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl my-6">
+    <div class="max-w-md w-full bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl border emerald-border shadow-2xl my-6 relative overflow-hidden">
         
+        <!-- Top Glow Accents -->
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Banner / Logo Header -->
         <div class="mb-4">
-            <img src="https://archive.org/download/image_2a884fe73/image_2a884fe7~3.jpg" alt="Apk Layer Banner" class="w-full h-32 object-cover rounded-xl border border-slate-800 shadow-md">
+            <img src="https://archive.org/download/image_2a884fe73/image_2a884fe7~3.jpg" alt="Apk Layer Banner" class="w-full h-32 object-cover rounded-2xl border emerald-border shadow-md">
         </div>
 
         <div class="flex justify-between items-center mb-6">
             <div>
-                <h1 class="text-xl font-bold text-blue-400">Apk Layer Console</h1>
-                <p class="text-xs text-slate-400">Publish Globally via Firebase</p>
+                <h1 class="text-xl font-extrabold text-emerald-400 gold-glow">ApkLayer Console</h1>
+                <p class="text-xs text-amber-300/80 font-medium">Global US-Targeted App Publisher</p>
             </div>
-            <!-- Visit Store Link without store.html -->
-            <a href="https://apk-layer.vercel.app/" target="_blank" class="px-3 py-1 bg-slate-950 border border-slate-800 rounded-lg text-xs font-semibold text-slate-300">Visit Store</a>
+            <a href="https://apk-layer.vercel.app/" target="_blank" class="px-3.5 py-1.5 bg-emerald-950/60 border emerald-border rounded-xl text-xs font-bold text-emerald-300 hover:bg-emerald-900/40 transition">Visit Store</a>
         </div>
 
         <form id="uploadForm" onsubmit="uploadApp(event)" class="space-y-4">
             <div>
-                <label class="block text-xs uppercase text-slate-400 mb-1">App Name</label>
-                <input type="text" id="appName" required class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm" placeholder="My App">
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Name</label>
+                <input type="text" id="appName" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="Subway Surfers Mod">
             </div>
             <div>
-                <label class="block text-xs uppercase text-slate-400 mb-1">Package Name</label>
-                <input type="text" id="packageName" required class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm" placeholder="com.app.tool">
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">Package Name</label>
+                <input type="text" id="packageName" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="com.kiloo.subwaysurf">
             </div>
             <div>
-                <label class="block text-xs uppercase text-slate-400 mb-1">Version</label>
-                <input type="text" id="version" required class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm" placeholder="1.0">
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">Version</label>
+                <input type="text" id="version" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="3.0.0">
             </div>
             <div>
-                <label class="block text-xs uppercase text-slate-400 mb-1">App Description</label>
-                <textarea id="appDesc" rows="2" required class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm resize-none" placeholder="Description..."></textarea>
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Description</label>
+                <textarea id="appDesc" rows="2" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm resize-none focus:outline-none" placeholder="Write features, unlimited money/coins..."></textarea>
             </div>
+            
+            <!-- App Logo File -->
             <div>
-                <label class="block text-xs uppercase text-slate-400 mb-1">App Logo Image</label>
-                <input type="file" id="logoFile" accept="image/*" required class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-slate-800 file:text-white file:font-semibold">
-            </div>
-            <div>
-                <label class="block text-xs uppercase text-slate-400 mb-1">APK File OR Direct Link</label>
-                <input type="file" id="apkFile" accept=".apk" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white file:font-semibold mb-2">
-                <input type="url" id="directDownloadUrl" placeholder="Or Paste Direct URL (https://...)" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm">
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Logo Image (Square)</label>
+                <input type="file" id="logoFile" accept="image/*" required class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-emerald-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-emerald-500 transition">
             </div>
 
-            <!-- 5 Minutes Timer Progress Box -->
-            <div id="progressContainer" class="hidden text-center py-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading Files to Cloud...</p>
-                <p id="timerText" class="text-sm text-blue-400 font-mono font-bold">Time Remaining: 05:00</p>
-                <p class="text-[10px] text-slate-500">Please do not refresh or close the page while uploading.</p>
+            <!-- Multiple Screenshots Input -->
+            <div>
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Screenshots (Select Multiple)</label>
+                <input type="file" id="screenshotFiles" accept="image/*" multiple class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-amber-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-amber-500 transition">
             </div>
 
-            <button type="submit" id="subBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-sm transition">
-                Publish App Globally
+            <!-- APK File or Direct Link -->
+            <div>
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">APK File OR Direct Link</label>
+                <input type="file" id="apkFile" accept=".apk" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-blue-500 mb-2">
+                <input type="url" id="directDownloadUrl" placeholder="Or Paste Direct URL (https://...)" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none">
+            </div>
+
+            <!-- Timer Progress Box -->
+            <div id="progressContainer" class="hidden text-center py-4 bg-slate-950 rounded-2xl border emerald-border space-y-2">
+                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading Files to Worldwide Cloud...</p>
+                <p id="timerText" class="text-sm text-emerald-400 font-mono font-bold">Time Remaining: 05:00</p>
+                <p class="text-[10px] text-slate-500">Please do not refresh or close the page.</p>
+            </div>
+
+            <button type="submit" id="subBtn" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-500 hover:to-amber-500 rounded-2xl font-extrabold text-sm transition shadow-lg shadow-emerald-900/30 text-white cursor-pointer">
+                🚀 Publish App Globally
             </button>
         </form>
 
-        <div id="resultBox" class="hidden mt-6 p-4 bg-slate-950 rounded-xl border border-slate-800 text-center space-y-3">
-            <p class="text-xs text-green-400 font-bold">✅ App Live Worldwide for Everyone!</p>
-            <input type="text" id="shareLink" readonly class="w-full p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300 text-center select-all">
+        <div id="resultBox" class="hidden mt-6 p-4 bg-slate-950 rounded-2xl border emerald-border text-center space-y-3">
+            <p class="text-xs text-emerald-400 font-bold">✅ App Live Worldwide for Everyone!</p>
+            <input type="text" id="shareLink" readonly class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 text-center select-all">
             <div class="flex gap-2">
-                <button onclick="copyLink()" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-semibold">Copy Link</button>
-                <a id="openLinkBtn" href="https://apk-layer.vercel.app/" target="_blank" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-semibold text-center">Open Store</a>
+                <button onclick="copyLink()" class="flex-1 py-2.5 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white rounded-xl text-xs font-bold border border-emerald-500/30 transition">Copy Link</button>
+                <a id="openLinkBtn" href="https://apk-layer.vercel.app/" target="_blank" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-semibold text-center text-white">Open Store</a>
             </div>
         </div>
 
@@ -91,6 +117,7 @@
             const version = document.getElementById('version').value.trim();
             const description = document.getElementById('appDesc').value.trim();
             const logoFile = document.getElementById('logoFile').files[0];
+            const screenshotFiles = document.getElementById('screenshotFiles').files;
             const apkFile = document.getElementById('apkFile').files[0];
             const directUrl = document.getElementById('directDownloadUrl').value.trim();
 
@@ -128,6 +155,25 @@
                 });
                 const logoUrl = `https://archive.org/download/${identifier}/logo.png`;
 
+                // Upload Multiple Screenshots if selected
+                let screenshotsUrls = [];
+                if (screenshotFiles && screenshotFiles.length > 0) {
+                    for (let i = 0; i < screenshotFiles.length; i++) {
+                        let sFile = screenshotFiles[i];
+                        status.innerText = `Uploading Screenshot ${i + 1} of ${screenshotFiles.length}...`;
+                        let sFileName = `screenshot_${i + 1}.png`;
+                        await fetch(`https://s3.us.archive.org/${identifier}/${sFileName}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `LOW ${IA_ACCESS_KEY}:${IA_SECRET_KEY}`,
+                                'Content-Type': sFile.type
+                            },
+                            body: sFile
+                        });
+                        screenshotsUrls.push(`https://archive.org/download/${identifier}/${sFileName}`);
+                    }
+                }
+
                 let archiveDownloadUrl = "";
                 let fileSize = "Web Link";
 
@@ -155,6 +201,7 @@
                     version: version,
                     description: description,
                     logoUrl: logoUrl,
+                    screenshots: screenshotsUrls,
                     archiveUrl: archiveDownloadUrl,
                     size: fileSize
                 };
