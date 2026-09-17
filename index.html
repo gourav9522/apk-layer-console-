@@ -73,7 +73,8 @@
             <div>
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">APK File OR Direct Link</label>
                 <input type="file" id="apkFile" accept=".apk" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-blue-500 mb-2">
-                <input type="url" id="directDownloadUrl" placeholder="Or Paste Direct URL (https://...)" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none">
+                <input type="url" id="directDownloadUrl" placeholder="Or Paste Direct URL (https://...)" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none mb-2">
+                <input type="text" id="manualFileSize" placeholder="Enter File Size manually (e.g. 1.2 GB, 450 MB)" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none">
             </div>
 
             <!-- Timer Progress Box -->
@@ -122,6 +123,7 @@
             const screenshotFiles = document.getElementById('screenshotFiles').files;
             const apkFile = document.getElementById('apkFile').files[0];
             const directUrl = document.getElementById('directDownloadUrl').value.trim();
+            const manualSize = document.getElementById('manualFileSize').value.trim();
 
             if (!logoFile) return alert('Select Logo image!');
             if (!apkFile && !directUrl) return alert('Select APK file or Direct URL!');
@@ -193,6 +195,7 @@
                     fileSize = (apkFile.size / (1024*1024)).toFixed(1) + ' MB';
                 } else {
                     archiveDownloadUrl = directUrl;
+                    fileSize = manualSize ? manualSize : "Web Link";
                 }
 
                 status.innerText = "Registering on Global Server...";
