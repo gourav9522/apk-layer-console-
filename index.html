@@ -78,7 +78,7 @@
 
             <!-- Timer Progress Box -->
             <div id="progressContainer" class="hidden text-center py-4 bg-slate-950 rounded-2xl border emerald-border space-y-2">
-                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading Files to Worldwide Cloud...</p>
+                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading Files to Telegram Cloud...</p>
                 <p id="timerText" class="text-sm text-emerald-400 font-mono font-bold">Time Remaining: 05:00</p>
                 <p class="text-[10px] text-slate-500">Please do not refresh or close the page.</p>
             </div>
@@ -104,6 +104,7 @@
         const IA_ACCESS_KEY = "OLmzxUOSjra7c5Mh";
         const IA_SECRET_KEY = "jyyV5luXiOGFzTCX";
         const FIREBASE_DB_URL = "https://apk-layer-default-rtdb.firebaseio.com/apps";
+        const RENDER_SERVER_URL = "https://download-link-server.onrender.com";
 
         async function uploadApp(e) {
             e.preventDefault();
@@ -179,16 +180,21 @@
                 let fileSize = "Web Link";
 
                 if (apkFile) {
-                    status.innerText = "Uploading APK File to Internet Archive...";
-                    await fetch(`https://s3.us.archive.org/${identifier}/${apkFile.name}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `LOW ${IA_ACCESS_KEY}:${IA_SECRET_KEY}`,
-                            'Content-Type': 'application/vnd.android.package-archive'
-                        },
-                        body: apkFile
+                    status.innerText = "Uploading APK to Telegram via Render Server...";
+                    const formData = new FormData();
+                    formData.append('apkFile', apkFile);
+
+                    const uploadRes = await fetch(`${RENDER_SERVER_URL}/api/upload-apk`, {
+                        method: 'POST',
+                        body: formData
                     });
-                    archiveDownloadUrl = `https://archive.org/download/${identifier}/${apkFile.name}`;
+
+                    const uploadData = await uploadRes.json();
+                    if (!uploadData.success) {
+                        throw new Error(uploadData.error || "Telegram upload failed via server");
+                    }
+
+                    archiveDownloadUrl = uploadData.downloadUrl;
                     fileSize = (apkFile.size / (1024*1024)).toFixed(1) + ' MB';
                 } else {
                     archiveDownloadUrl = directUrl;
