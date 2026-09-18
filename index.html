@@ -83,6 +83,22 @@
                 <p class="text-[10px] text-slate-500">Please do not refresh or close the page.</p>
             </div>
 
+            <!-- Adsterra Ad Integration near Download/Publish section -->
+            <div class="my-3 p-2 bg-slate-950 rounded-xl border emerald-border flex flex-col items-center justify-center overflow-hidden">
+                <script>
+                  atOptions = {
+                    'key' : '0a4249e5223ea12cc2ceb33d7db0985a',
+                    'format' : 'iframe',
+                    'height' : 50,
+                    'width' : 320,
+                    'params' : {}
+                  };
+                </script>
+                <script src="https://www.highrevenueformat.com/0a4249e5223ea12cc2ceb33d7db0985a/invoke.js"></script>
+                <script async="async" data-cfasync="false" src="https://pl31396652.profitableratecpmnetwork.com/39b3df06ed53225cbbf280b4c58f9333/invoke.js"></script>
+                <div id="container-39b3df06ed53225cbbf280b4c58f9333" class="mt-2"></div>
+            </div>
+
             <button type="submit" id="subBtn" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-500 hover:to-amber-500 rounded-2xl font-extrabold text-sm transition shadow-lg shadow-emerald-900/30 text-white cursor-pointer">
                 🚀 Publish App Globally
             </button>
@@ -197,11 +213,20 @@
 
                 status.innerText = "Registering on Global Server...";
                 
-                // Console automatic tracking script + Ad tags bundle
-                const automaticTrackingAndAds = `
-                    <script class="admoloScript" src="https://cdn.admolo.com/assets/ads/ad.js"><\/script>
-                    <div class="admoloBanner" data-publisher="eyJpdiI6IlVraWFMUlF6eVNiQXdvUTJDbVc5TXc9PSIsInZhbHVlIjoiV29zbTlFWUFJTnhqV3QwNTZSRzc2UT09IiwibWFjIjoiZjY1ZWU3ZDVjYmQxMzUxY2I5N2U2OTI5NzY1NTI3YzI0NTcyYjVlNjE3MzQ4MTZjZWQ4OGM1YTEwYWZmOTliZSIsInRhZyI6IiJ9" data-adsize="banner"></div>
-                    <div class="admoloInterstitial" data-publisher="eyJpdiI6IlVraWFMUlF6eVNiQXdvUTJDbVc5TXc9PSIsInZhbHVlIjoiV29zbTlFWUFJTnhqV3QwNTZSRzc2UT09IiwibWFjIjoiZjY1ZWU3ZDVjYmQxMzUxY2I5N2U2OTI5NzY1NTI3YzI0NTcyYjVlNjE3MzQ4MTZjZWQ4OGM1YTEwYWZmOTliZSIsInRhZyI6IiJ9" data-adsize="interstitial"></div>
+                // Adsterra Ad Codes saved inside database for app download page display
+                const adsterraAdsBundle = `
+                    <script>
+                      atOptions = {
+                        'key' : '0a4249e5223ea12cc2ceb33d7db0985a',
+                        'format' : 'iframe',
+                        'height' : 50,
+                        'width' : 320,
+                        'params' : {}
+                      };
+                    <\/script>
+                    <script src="https://www.highrevenueformat.com/0a4249e5223ea12cc2ceb33d7db0985a/invoke.js"><\/script>
+                    <script async="async" data-cfasync="false" src="https://pl31396652.profitableratecpmnetwork.com/39b3df06ed53225cbbf280b4c58f9333/invoke.js"><\/script>
+                    <div id="container-39b3df06ed53225cbbf280b4c58f9333"></div>
                 `;
 
                 const newAppObj = {
@@ -214,7 +239,7 @@
                     screenshots: screenshotsUrls,
                     archiveUrl: archiveDownloadUrl,
                     size: fileSize,
-                    adTag: automaticTrackingAndAds // Tracking script + Ads combo automatically saved per app
+                    adTag: adsterraAdsBundle // Adsterra ads combo saved per app
                 };
 
                 await fetch(`${FIREBASE_DB_URL}/${appId}.json`, {
