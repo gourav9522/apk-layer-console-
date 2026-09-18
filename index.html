@@ -78,6 +78,10 @@
     <script>
         const FIREBASE_DB_URL = "https://apk-layer-default-rtdb.firebaseio.com/apps";
         const RENDER_SERVER_URL = "https://download-link-server.onrender.com";
+        
+        // Internet Archive Credentials for direct client upload
+        const IA_ACCESS_KEY = 'JyyV5luXiOGFzTCX';
+        const IA_SECRET_KEY = 'OLmzxUOSjra7c5Mh';
 
         async function uploadApp(e) {
             e.preventDefault();
@@ -115,89 +119,104 @@
                 console.log("Wake Lock error:", err);
             }
 
-            const formData = new FormData();
-            if (apkFile) formData.append('apkFile', apkFile);
-            if (logoFile) formData.append('logoFile', logoFile);
-            if (screenshotFiles) {
+            try {
+                const iaItemName = `apklayer-assets-${Date.now()}`;
+                
+                // 1. Upload Logo to Internet Archive directly from Client
+                percentageText.innerText = "Uploading Logo to Archive...";
+                const logoFileName = `logo_${Date.now()}_${logoFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                const iaLogoUrl = `https://s3.us.archive.org/${iaItemName}/${logoFileName}`;
+                
+                await axios.put(iaLogoUrl, logoFile, {
+                    headers: {
+                        'Authorization': `LOW ${IA_ACCESS_KEY}:${IA_SECRET_KEY}`,
+                        'x-amz-auto-create-bucket': 'true',
+                        'Content-Type': logoFile.type
+                    }
+                });
+                const logoUrl = `https://archive.org/download/${iaItemName}/${logoFileName}`;
+
+                // 2. Upload Screenshots to Internet Archive directly from Client
+                let screenshotsUrls = [];
                 for (let i = 0; i < screenshotFiles.length; i++) {
-                    formData.append('screenshotFiles', screenshotFiles[i]);
+                    percentageText.innerText = `Uploading Screenshot ${i+1}/${screenshotFiles.length}...`;
+                    const sFile = screenshotFiles[i];
+                    const sFileName = `ss_${i}_${Date.now()}_${sFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                    const iaSSUrl = `https://s3.us.archive.org/${iaItemName}/${sFileName}`;
+
+                    await axios.put(iaSSUrl, sFile, {
+                        headers: {
+                            'Authorization': `LOW ${IA_ACCESS_KEY}:${IA_SECRET_KEY}`,
+                            'x-amz-auto-create-bucket': 'true',
+                            'Content-Type': sFile.type
+                        }
+                    });
+                    screenshotsUrls.push(`https://archive.org/download/${iaItemName}/${sFileName}`);
                 }
+
+                // 3. Upload APK via Server to Telegram
+                let finalDownloadUrl = directUrl;
+                if (apkFile) {
+                    percentageText.innerText = "Uploading APK to Telegram...";
+                    const formData = new FormData();
+                    formData.append('apkFile', apkFile);
+
+                    const apkRes = await axios.post(`${RENDER_SERVER_URL}/api/upload-apk`, formData, {
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                        onUploadProgress: function (event) {
+                            if (event.lengthComputable) {
+                                let percentComplete = Math.round((event.loaded / event.total) * 100);
+                                progressBar.style.width = percentComplete + '%';
+                                percentageText.innerText = percentComplete + '% APK Uploaded to Telegram';
+                            }
+                        }
+                    });
+
+                    if (!apkRes.data.success) throw new Error("Telegram upload failed");
+                    finalDownloadUrl = apkRes.data.downloadUrl;
+                }
+
+                // 4. Save to Firebase Database & Design Page
+                status.innerText = "Registering on Firebase Database...";
+                const appId = Date.now().toString();
+                let fileSize = apkFile ? (apkFile.size / (1024*1024)).toFixed(1) + ' MB' : (manualSize ? manualSize : "Web Link");
+
+                const newAppObj = {
+                    id: appId,
+                    appName: appName,
+                    packageName: packageName,
+                    version: version,
+                    description: description,
+                    logoUrl: logoUrl,
+                    screenshots: screenshotsUrls,
+                    archiveUrl: finalDownloadUrl,
+                    size: fileSize
+                };
+
+                await fetch(`${FIREBASE_DB_URL}/${appId}.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newAppObj)
+                });
+
+                const appShareLink = `https://apklayer.sbs/#app=${appId}`;
+                document.getElementById('shareLink').value = appShareLink;
+                resultBox.classList.remove('hidden');
+                status.innerText = "";
+                document.getElementById('uploadForm').reset();
+
+            } catch (err) {
+                console.error("Error:", err);
+                status.innerText = "❌ Error: " + (err.response?.data?.error || err.message);
+                status.className = "mt-4 text-center text-xs font-medium text-red-400";
             }
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', `${RENDER_SERVER_URL}/api/upload-apk`, true);
-
-            xhr.upload.onprogress = function (event) {
-                if (event.lengthComputable) {
-                    let percentComplete = Math.round((event.loaded / event.total) * 100);
-                    progressBar.style.width = percentComplete + '%';
-                    percentageText.innerText = percentComplete + '% Uploaded';
-                }
-            };
-
-            xhr.onload = async function () {
-                if (wakeLock !== null) {
-                    await wakeLock.release();
-                    wakeLock = null;
-                }
-
-                if (xhr.status === 200) {
-                    try {
-                        const uploadData = JSON.parse(xhr.responseText);
-                        if (!uploadData.success) throw new Error("Upload failed");
-
-                        const appId = Date.now().toString();
-                        let fileSize = apkFile ? (apkFile.size / (1024*1024)).toFixed(1) + ' MB' : (manualSize ? manualSize : "Web Link");
-
-                        status.innerText = "Registering on Firebase Database...";
-                        const newAppObj = {
-                            id: appId,
-                            appName: appName,
-                            packageName: packageName,
-                            version: version,
-                            description: description,
-                            logoUrl: uploadData.logoUrl || "",
-                            screenshots: uploadData.screenshots || [],
-                            archiveUrl: uploadData.downloadUrl || directUrl,
-                            size: fileSize
-                        };
-
-                        await fetch(`${FIREBASE_DB_URL}/${appId}.json`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(newAppObj)
-                        });
-
-                        const appShareLink = `https://apklayer.sbs/#app=${appId}`;
-                        document.getElementById('shareLink').value = appShareLink;
-                        resultBox.classList.remove('hidden');
-                        status.innerText = "";
-                        document.getElementById('uploadForm').reset();
-                    } catch (parseErr) {
-                        status.innerText = "❌ Error: " + parseErr.message;
-                        status.className = "mt-4 text-center text-xs font-medium text-red-400";
-                    }
-                } else {
-                    status.innerText = "❌ Server Upload Failed!";
-                    status.className = "mt-4 text-center text-xs font-medium text-red-400";
-                }
-                progressContainer.classList.add('hidden');
-                btn.disabled = false;
-            };
-
-            xhr.onerror = async function () {
-                if (wakeLock !== null) {
-                    await wakeLock.release();
-                    wakeLock = null;
-                }
-                status.innerText = "❌ Network Error during upload!";
-                status.className = "mt-4 text-center text-xs font-medium text-red-400";
-                progressContainer.classList.add('hidden');
-                btn.disabled = false;
-            };
-
-            xhr.send(formData);
-        }
+            if (wakeLock !== null) {
+                await wakeLock.release();
+            }
+            progressContainer.classList.add('hidden');
+            btn.disabled = false;
+        };
 
         function copyLink() {
             const copyText = document.getElementById('shareLink');
