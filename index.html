@@ -17,7 +17,7 @@
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h1 class="text-xl font-extrabold text-emerald-400 gold-glow">ApkLayer Console</h1>
-                <p class="text-xs text-amber-300/80 font-medium">Telegram Cloud Publisher</p>
+                <p class="text-xs text-amber-300/80 font-medium">Cloud Publisher</p>
             </div>
             <a href="https://apklayer.sbs/" target="_blank" class="px-3.5 py-1.5 bg-emerald-950/60 border emerald-border rounded-xl text-xs font-bold text-emerald-300">Visit Store</a>
         </div>
@@ -56,12 +56,12 @@
 
             <!-- Live Progress Box -->
             <div id="progressContainer" class="hidden text-center py-4 bg-slate-950 rounded-2xl border emerald-border space-y-2">
-                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading to Telegram Cloud...</p>
+                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading files...</p>
                 <div class="w-full bg-slate-800 rounded-full h-2.5 my-2">
                     <div id="progressBar" class="bg-emerald-500 h-2.5 rounded-full" style="width: 0%"></div>
                 </div>
                 <p id="percentageText" class="text-sm text-emerald-400 font-mono font-bold">0% Uploaded</p>
-                <p class="text-[10px] text-slate-500">Screen sleep is locked. Please keep page open.</p>
+                <p class="text-[10px] text-slate-500">Screen sleep locked. Please keep page open.</p>
             </div>
 
             <button type="submit" id="subBtn" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 rounded-2xl font-extrabold text-sm text-white cursor-pointer">🚀 Publish App Globally</button>
@@ -106,7 +106,6 @@
             resultBox.classList.add('hidden');
             progressContainer.classList.remove('hidden');
 
-            // Prevent Screen Sleep (Wake Lock API)
             let wakeLock = null;
             try {
                 if ('wakeLock' in navigator) {
@@ -125,7 +124,6 @@
                 }
             }
 
-            // Using XMLHttpRequest for Live Upload Percentage Tracking
             const xhr = new XMLHttpRequest();
             xhr.open('POST', `${RENDER_SERVER_URL}/api/upload-apk`, true);
 
@@ -138,7 +136,6 @@
             };
 
             xhr.onload = async function () {
-                // Release Screen Wake Lock
                 if (wakeLock !== null) {
                     await wakeLock.release();
                     wakeLock = null;
