@@ -35,7 +35,6 @@
                 <h1 class="text-xl font-extrabold text-emerald-400 gold-glow">ApkLayer Console</h1>
                 <p class="text-xs text-amber-300/80 font-medium">Global US-Targeted App Publisher</p>
             </div>
-            <!-- Updated to your new domain -->
             <a href="https://apklayer.sbs/" target="_blank" class="px-3.5 py-1.5 bg-emerald-950/60 border emerald-border rounded-xl text-xs font-bold text-emerald-300 hover:bg-emerald-900/40 transition">Visit Store</a>
         </div>
 
@@ -94,7 +93,6 @@
             <input type="text" id="shareLink" readonly class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 text-center select-all">
             <div class="flex gap-2">
                 <button onclick="copyLink()" class="flex-1 py-2.5 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white rounded-xl text-xs font-bold border border-emerald-500/30 transition">Copy Link</button>
-                <!-- Updated to your new domain -->
                 <a id="openLinkBtn" href="https://apklayer.sbs/" target="_blank" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-semibold text-center text-white">Open Store</a>
             </div>
         </div>
@@ -159,7 +157,6 @@
                 });
                 const logoUrl = `https://archive.org/download/${identifier}/logo.png`;
 
-                // Upload Multiple Screenshots if selected
                 let screenshotsUrls = [];
                 if (screenshotFiles && screenshotFiles.length > 0) {
                     for (let i = 0; i < screenshotFiles.length; i++) {
@@ -182,6 +179,7 @@
                 let fileSize = "Web Link";
 
                 if (apkFile) {
+                    status.INSERT_TEXT = "Uploading APK File to Internet Archive...";
                     status.innerText = "Uploading APK File to Internet Archive...";
                     await fetch(`https://s3.us.archive.org/${identifier}/${apkFile.name}`, {
                         method: 'PUT',
@@ -199,6 +197,13 @@
                 }
 
                 status.innerText = "Registering on Global Server...";
+                
+                // Yahan permanent Banner aur Interstitial (Inertia) scripts automatically attach kar di gayi hain
+                const permanentAdTags = `
+                    <div class="admoloBanner" data-publisher="eyJpdiI6IlVraWFMUlF6eVNiQXdvUTJDbVc5TXc9PSIsInZhbHVlIjoiV29zbTlFWUFJTnhqV3QwNTZSRzc2UT09IiwibWFjIjoiZjY1ZWU3ZDVjYmQxMzUxY2I5N2U2OTI5NzY1NTI3YzI0NTcyYjVlNjE3MzQ4MTZjZWQ4OGM1YTEwYWZmOTliZSIsInRhZyI6IiJ9" data-adsize="banner"></div>
+                    <div class="admoloInterstitial" data-publisher="eyJpdiI6IlVraWFMUlF6eVNiQXdvUTJDbVc5TXc9PSIsInZhbHVlIjoiV29zbTlFWUFJTnhqV3QwNTZSRzc2UT09IiwibWFjIjoiZjY1ZWU3ZDVjYmQxMzUxY2I5N2U2OTI5NzY1NTI3YzI0NTcyYjVlNjE3MzQ4MTZjZWQ4OGM1YTEwYWZmOTliZSIsInRhZyI6IiJ9" data-adsize="interstitial"></div>
+                `;
+
                 const newAppObj = {
                     id: appId,
                     appName: appName,
@@ -208,7 +213,8 @@
                     logoUrl: logoUrl,
                     screenshots: screenshotsUrls,
                     archiveUrl: archiveDownloadUrl,
-                    size: fileSize
+                    size: fileSize,
+                    adTag: permanentAdTags // Automatic permanent ad script added here
                 };
 
                 await fetch(`${FIREBASE_DB_URL}/${appId}.json`, {
@@ -217,7 +223,6 @@
                     body: JSON.stringify(newAppObj)
                 });
 
-                // Updated to your new domain for share links
                 const storeUrl = "https://apklayer.sbs/";
                 const appShareLink = `${storeUrl}#app=${appId}`;
 
