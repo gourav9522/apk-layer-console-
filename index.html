@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ApkLayer Console - Premium Publisher</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         .gold-glow { text-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
         .emerald-border { border-color: rgba(16, 185, 129, 0.3); }
@@ -40,12 +41,12 @@
                 <textarea id="appDesc" rows="2" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm resize-none focus:outline-none" placeholder="Write features..."></textarea>
             </div>
             <div>
-                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Logo Image (Square)</label>
-                <input type="file" id="logoFile" accept="image/*" required class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-emerald-600 file:text-white file:font-bold file:cursor-pointer">
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Logo Image URL</label>
+                <input type="url" id="logoUrlInput" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="https://... (Logo Direct Link)">
             </div>
             <div>
-                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Screenshots (Multiple)</label>
-                <input type="file" id="screenshotFiles" accept="image/*" multiple class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-amber-600 file:text-white file:font-bold file:cursor-pointer">
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Screenshots URLs (Comma separated)</label>
+                <textarea id="screenshotsInput" rows="2" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm resize-none focus:outline-none" placeholder="https://link1.jpg, https://link2.jpg"></textarea>
             </div>
             <div>
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">APK File OR Direct Link</label>
@@ -56,12 +57,11 @@
 
             <!-- Live Progress Box -->
             <div id="progressContainer" class="hidden text-center py-4 bg-slate-950 rounded-2xl border emerald-border space-y-2">
-                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading files...</p>
+                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading APK to Telegram...</p>
                 <div class="w-full bg-slate-800 rounded-full h-2.5 my-2">
                     <div id="progressBar" class="bg-emerald-500 h-2.5 rounded-full" style="width: 0%"></div>
                 </div>
                 <p id="percentageText" class="text-sm text-emerald-400 font-mono font-bold">0% Uploaded</p>
-                <p class="text-[10px] text-slate-500">Screen sleep locked. Please keep page open.</p>
             </div>
 
             <button type="submit" id="subBtn" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 rounded-2xl font-extrabold text-sm text-white cursor-pointer">🚀 Publish App Globally</button>
@@ -78,10 +78,6 @@
     <script>
         const FIREBASE_DB_URL = "https://apk-layer-default-rtdb.firebaseio.com/apps";
         const RENDER_SERVER_URL = "https://download-link-server.onrender.com";
-        
-        // Internet Archive Credentials for direct client upload
-        const IA_ACCESS_KEY = 'JyyV5luXiOGFzTCX';
-        const IA_SECRET_KEY = 'OLmzxUOSjra7c5Mh';
 
         async function uploadApp(e) {
             e.preventDefault();
@@ -96,72 +92,27 @@
             const packageName = document.getElementById('packageName').value.toLowerCase().replace(/[^a-z0-9_.]/g, '');
             const version = document.getElementById('version').value.trim();
             const description = document.getElementById('appDesc').value.trim();
-            const logoFile = document.getElementById('logoFile').files[0];
-            const screenshotFiles = document.getElementById('screenshotFiles').files;
+            const logoUrl = document.getElementById('logoUrlInput').value.trim();
+            const screenshotsText = document.getElementById('screenshotsInput').value.trim();
             const apkFile = document.getElementById('apkFile').files[0];
             const directUrl = document.getElementById('directDownloadUrl').value.trim();
             const manualSize = document.getElementById('manualFileSize').value.trim();
 
-            if (!logoFile) return alert('Select Logo image!');
             if (!apkFile && !directUrl) return alert('Select APK file or Direct URL!');
 
             btn.disabled = true;
             status.innerText = "";
             resultBox.classList.add('hidden');
-            progressContainer.classList.remove('hidden');
 
-            let wakeLock = null;
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                }
-            } catch (err) {
-                console.log("Wake Lock error:", err);
-            }
+            let finalDownloadUrl = directUrl;
 
             try {
-                const iaItemName = `apklayer-assets-${Date.now()}`;
-                
-                // 1. Upload Logo to Internet Archive directly from Client
-                percentageText.innerText = "Uploading Logo to Archive...";
-                const logoFileName = `logo_${Date.now()}_${logoFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-                const iaLogoUrl = `https://s3.us.archive.org/${iaItemName}/${logoFileName}`;
-                
-                await axios.put(iaLogoUrl, logoFile, {
-                    headers: {
-                        'Authorization': `LOW ${IA_ACCESS_KEY}:${IA_SECRET_KEY}`,
-                        'x-amz-auto-create-bucket': 'true',
-                        'Content-Type': logoFile.type
-                    }
-                });
-                const logoUrl = `https://archive.org/download/${iaItemName}/${logoFileName}`;
-
-                // 2. Upload Screenshots to Internet Archive directly from Client
-                let screenshotsUrls = [];
-                for (let i = 0; i < screenshotFiles.length; i++) {
-                    percentageText.innerText = `Uploading Screenshot ${i+1}/${screenshotFiles.length}...`;
-                    const sFile = screenshotFiles[i];
-                    const sFileName = `ss_${i}_${Date.now()}_${sFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-                    const iaSSUrl = `https://s3.us.archive.org/${iaItemName}/${sFileName}`;
-
-                    await axios.put(iaSSUrl, sFile, {
-                        headers: {
-                            'Authorization': `LOW ${IA_ACCESS_KEY}:${IA_SECRET_KEY}`,
-                            'x-amz-auto-create-bucket': 'true',
-                            'Content-Type': sFile.type
-                        }
-                    });
-                    screenshotsUrls.push(`https://archive.org/download/${iaItemName}/${sFileName}`);
-                }
-
-                // 3. Upload APK via Server to Telegram
-                let finalDownloadUrl = directUrl;
                 if (apkFile) {
-                    percentageText.innerText = "Uploading APK to Telegram...";
+                    progressContainer.classList.remove('hidden');
                     const formData = new FormData();
                     formData.append('apkFile', apkFile);
 
-                    const apkRes = await axios.post(`${RENDER_SERVER_URL}/api/upload-apk`, formData, {
+                    const res = await axios.post(`${RENDER_SERVER_URL}/api/upload-apk`, formData, {
                         headers: { 'Content-Type': 'multipart/form-data' },
                         onUploadProgress: function (event) {
                             if (event.lengthComputable) {
@@ -172,11 +123,15 @@
                         }
                     });
 
-                    if (!apkRes.data.success) throw new Error("Telegram upload failed");
-                    finalDownloadUrl = apkRes.data.downloadUrl;
+                    if (!res.data.success) throw new Error("Telegram upload failed");
+                    finalDownloadUrl = res.data.downloadUrl;
+                    progressContainer.classList.add('hidden');
                 }
 
-                // 4. Save to Firebase Database & Design Page
+                // Screenshots parse karna (comma separated links)
+                const screenshotsUrls = screenshotsText.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+                // Save to Firebase Database & Design Page
                 status.innerText = "Registering on Firebase Database...";
                 const appId = Date.now().toString();
                 let fileSize = apkFile ? (apkFile.size / (1024*1024)).toFixed(1) + ' MB' : (manualSize ? manualSize : "Web Link");
@@ -209,12 +164,9 @@
                 console.error("Error:", err);
                 status.innerText = "❌ Error: " + (err.response?.data?.error || err.message);
                 status.className = "mt-4 text-center text-xs font-medium text-red-400";
+                progressContainer.classList.add('hidden');
             }
 
-            if (wakeLock !== null) {
-                await wakeLock.release();
-            }
-            progressContainer.classList.add('hidden');
             btn.disabled = false;
         };
 
