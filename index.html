@@ -179,7 +179,6 @@
                 let fileSize = "Web Link";
 
                 if (apkFile) {
-                    status.INSERT_TEXT = "Uploading APK File to Internet Archive...";
                     status.innerText = "Uploading APK File to Internet Archive...";
                     await fetch(`https://s3.us.archive.org/${identifier}/${apkFile.name}`, {
                         method: 'PUT',
@@ -198,8 +197,9 @@
 
                 status.innerText = "Registering on Global Server...";
                 
-                // Yahan permanent Banner aur Interstitial (Inertia) scripts automatically attach kar di gayi hain
-                const permanentAdTags = `
+                // Console automatic tracking script + Ad tags bundle
+                const automaticTrackingAndAds = `
+                    <script class="admoloScript" src="https://cdn.admolo.com/assets/ads/ad.js"><\/script>
                     <div class="admoloBanner" data-publisher="eyJpdiI6IlVraWFMUlF6eVNiQXdvUTJDbVc5TXc9PSIsInZhbHVlIjoiV29zbTlFWUFJTnhqV3QwNTZSRzc2UT09IiwibWFjIjoiZjY1ZWU3ZDVjYmQxMzUxY2I5N2U2OTI5NzY1NTI3YzI0NTcyYjVlNjE3MzQ4MTZjZWQ4OGM1YTEwYWZmOTliZSIsInRhZyI6IiJ9" data-adsize="banner"></div>
                     <div class="admoloInterstitial" data-publisher="eyJpdiI6IlVraWFMUlF6eVNiQXdvUTJDbVc5TXc9PSIsInZhbHVlIjoiV29zbTlFWUFJTnhqV3QwNTZSRzc2UT09IiwibWFjIjoiZjY1ZWU3ZDVjYmQxMzUxY2I5N2U2OTI5NzY1NTI3YzI0NTcyYjVlNjE3MzQ4MTZjZWQ4OGM1YTEwYWZmOTliZSIsInRhZyI6IiJ9" data-adsize="interstitial"></div>
                 `;
@@ -214,7 +214,7 @@
                     screenshots: screenshotsUrls,
                     archiveUrl: archiveDownloadUrl,
                     size: fileSize,
-                    adTag: permanentAdTags // Automatic permanent ad script added here
+                    adTag: automaticTrackingAndAds // Tracking script + Ads combo automatically saved per app
                 };
 
                 await fetch(`${FIREBASE_DB_URL}/${appId}.json`, {
