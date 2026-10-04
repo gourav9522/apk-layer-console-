@@ -16,7 +16,6 @@
             border-color: #10b981;
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
-        /* Drawer transition */
         #menuDrawer {
             transition: transform 0.3s ease-in-out;
         }
@@ -28,7 +27,6 @@
     <div class="absolute top-0 left-0 w-full bg-slate-900/80 backdrop-blur-md border-b border-emerald-500/20 px-4 py-3 flex justify-between items-center z-40">
         <div class="flex items-center gap-3">
             <button onclick="toggleMenu()" class="p-2 bg-slate-950 border emerald-border rounded-xl text-emerald-400 hover:bg-emerald-900/40 transition focus:outline-none">
-                <!-- Hamburger Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
@@ -38,7 +36,7 @@
         <a href="https://apklayer.sbs/" target="_blank" class="px-3 py-1.5 bg-emerald-950/60 border emerald-border rounded-xl text-xs font-bold text-emerald-300 hover:bg-emerald-900/40 transition">Store</a>
     </div>
 
-    <!-- Sliding Menu Drawer (Supports Swipe Left-to-Right) -->
+    <!-- Sliding Menu Drawer -->
     <div id="backdrop" onclick="toggleMenu()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden transition-opacity"></div>
     <div id="menuDrawer" class="fixed top-0 left-0 h-full w-72 bg-slate-900 border-r border-emerald-500/30 z-50 p-5 transform -translate-x-full flex flex-col justify-between shadow-2xl">
         <div>
@@ -56,9 +54,9 @@
                     <p class="font-bold text-emerald-400 mb-1">💰 Viral Profit Policy:</p>
                     <p class="text-[11px] text-slate-400">If your game goes viral, ApkLayer will publish it on the Google Play Store and share <span class="text-emerald-300 font-bold">30% profit</span> with you.</p>
                 </div>
-                <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/20 space-y-1">
+                <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/20 space-y-1.5">
                     <p class="font-bold text-amber-400">📞 Contact & Support:</p>
-                    <p class="text-[11px] text-slate-400">Contact us before uploading:</p>
+                    <p class="text-[11px] text-red-400 font-semibold">⚠️ You must contact us on our official Facebook before uploading any app!</p>
                     <a href="https://www.facebook.com/share/1C888z72hu/" target="_blank" class="block text-blue-400 underline font-bold mt-1">Official Facebook</a>
                     <p class="text-[11px] text-amber-300 font-mono">apklayer@gmail.com</p>
                 </div>
@@ -72,11 +70,9 @@
     <!-- Main Container -->
     <div class="max-w-md w-full bg-slate-900/90 backdrop-blur-md p-6 rounded-3xl border emerald-border shadow-2xl my-20 relative overflow-hidden">
         
-        <!-- Top Glow Accents -->
         <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <!-- Banner / Logo Header -->
         <div class="mb-4 mt-2">
             <img src="https://archive.org/download/image_2a884fe73/image_2a884fe7~3.jpg" alt="Apk Layer Banner" class="w-full h-32 object-cover rounded-2xl border emerald-border shadow-md">
         </div>
@@ -104,19 +100,16 @@
                 <textarea id="appDesc" rows="2" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm resize-none focus:outline-none" placeholder="Describe your game or app features..."></textarea>
             </div>
             
-            <!-- App Logo File -->
             <div>
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Logo Image (Square)</label>
                 <input type="file" id="logoFile" accept="image/*" required class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-emerald-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-emerald-500 transition">
             </div>
 
-            <!-- Multiple Screenshots Input -->
             <div>
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Screenshots (Select Multiple)</label>
                 <input type="file" id="screenshotFiles" accept="image/*" multiple class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-amber-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-amber-500 transition">
             </div>
 
-            <!-- APK File or Direct Link -->
             <div>
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">APK File OR Direct Link</label>
                 <input type="file" id="apkFile" accept=".apk" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-blue-500 mb-2">
@@ -124,7 +117,6 @@
                 <input type="text" id="manualFileSize" placeholder="Enter File Size manually (e.g. 45 MB, 120 MB)" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none">
             </div>
 
-            <!-- Timer & Sleep Mode Warning Box -->
             <div id="progressContainer" class="hidden text-center py-4 bg-slate-950 rounded-2xl border emerald-border space-y-2">
                 <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading Files to Worldwide Cloud...</p>
                 <p id="timerText" class="text-sm text-emerald-400 font-mono font-bold">Time Remaining: 05:00</p>
@@ -153,7 +145,6 @@
         const IA_SECRET_KEY = "jyyV5luXiOGFzTCX";
         const FIREBASE_DB_URL = "https://apk-layer-default-rtdb.firebaseio.com/apps";
 
-        // Toggle Drawer Function
         function toggleMenu() {
             const drawer = document.getElementById('menuDrawer');
             const backdrop = document.getElementById('backdrop');
@@ -170,7 +161,6 @@
             }
         }
 
-        // Swipe Left-to-Right Support for Mobile
         let touchStartX = 0;
         window.addEventListener('touchstart', e => {
             touchStartX = e.changedTouches[0].screenX;
@@ -179,7 +169,6 @@
         window.addEventListener('touchend', e => {
             let touchEndX = e.changedTouches[0].screenX;
             if (touchEndX - touchStartX > 80 && touchStartX < 50) {
-                // Swiped right from left edge -> Open Menu
                 const drawer = document.getElementById('menuDrawer');
                 if (drawer.classList.contains('-translate-x-full')) {
                     toggleMenu();
@@ -196,7 +185,6 @@
             const version = document.getElementById('version').value.trim();
             const description = document.getElementById('appDesc').value.trim();
             
-            // Security Filter for Banned/Modified Games
             const blockedKeywords = ['freefire', 'pubg', 'bgmi', 'ffmax', 'mod', 'hack', 'cheat', 'tencent', 'garena'];
             const checkString = (appName + " " + packageName + " " + description).toLowerCase();
             
