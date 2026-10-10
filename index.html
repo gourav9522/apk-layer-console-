@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ApkLayer Console - Premium Publisher</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase App & Auth SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <style>
         .gold-glow {
             text-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
@@ -38,7 +41,7 @@
     </div>
 
     <!-- Top Navigation Toolbar -->
-    <div class="absolute top-[62px] left-0 w-full bg-slate-900/80 backdrop-blur-md border-b border-emerald-500/20 px-4 py-3 flex justify-between items-center z-40">
+    <div class="absolute top-[62px] left-0 w-full bg-slate-900/85 backdrop-blur-md border-b border-emerald-500/20 px-4 py-3 flex justify-between items-center z-40">
         <div class="flex items-center gap-3">
             <button onclick="toggleMenu()" class="p-2 bg-slate-950 border emerald-border rounded-xl text-emerald-400 hover:bg-emerald-900/40 transition focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -47,7 +50,13 @@
             </button>
             <span class="font-extrabold text-sm text-emerald-400 gold-glow">ApkLayer Console</span>
         </div>
-        <a href="https://apklayer.sbs/" target="_blank" class="px-3 py-1.5 bg-emerald-950/60 border emerald-border rounded-xl text-xs font-bold text-emerald-300 hover:bg-emerald-900/40 transition">Store</a>
+        <div class="flex items-center gap-2">
+            <div id="userInfo" class="hidden items-center gap-2 text-xs">
+                <span id="userName" class="text-slate-300 font-semibold hidden md:inline"></span>
+                <button onclick="logoutUser()" class="px-2.5 py-1 bg-red-950/60 border border-red-500/30 rounded-lg text-red-300 hover:bg-red-900/40 transition">Logout</button>
+            </div>
+            <a href="https://apklayer.sbs/" target="_blank" class="px-3 py-1.5 bg-emerald-950/60 border emerald-border rounded-xl text-xs font-bold text-emerald-300 hover:bg-emerald-900/40 transition">Store</a>
+        </div>
     </div>
 
     <!-- Sliding Menu Drawer -->
@@ -65,12 +74,12 @@
                     <p class="text-[11px] text-slate-400">Only original 3D games or apps are allowed. Third-party mods, hacks, Free Fire, and PUBG are strictly banned.</p>
                 </div>
                 <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/20">
-                    <p class="font-bold text-emerald-400 mb-1">💰 Viral Profit Policy:</p>
-                    <p class="text-[11px] text-slate-400">If your game goes viral, ApkLayer will publish it on the Google Play Store and share <span class="text-emerald-300 font-bold">30% profit</span> with you.</p>
+                    <p class="font-bold text-emerald-400 mb-1">🛡️ Anti-Duplicate & Update Policy:</p>
+                    <p class="text-[11px] text-slate-400">Ek package name ka app pehle se publish hone par naya upload nahi hoga jab tak purana delete na ho. Aap apne dashboard se kabhi bhi file/logo update kar sakte hain.</p>
                 </div>
                 <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/20 space-y-1.5">
                     <p class="font-bold text-amber-400">📞 Contact & Support:</p>
-                    <p class="text-[11px] text-red-400 font-semibold">⚠️ You must contact us on our official Facebook before uploading any app!</p>
+                    <p class="text-[11px] text-red-400 font-semibold">⚠️ Contact us on official Facebook before uploading!</p>
                     <a href="https://www.facebook.com/share/1C888z72hu/" target="_blank" class="block text-blue-400 underline font-bold mt-1">Official Facebook</a>
                     <p class="text-[11px] text-amber-300 font-mono">apklayer@gmail.com</p>
                 </div>
@@ -92,17 +101,29 @@
         </div>
 
         <div class="mb-5 text-center">
-            <h1 class="text-xl font-extrabold text-emerald-400 gold-glow">Upload to ApkLayer</h1>
-            <p class="text-xs text-amber-300/80 font-medium">Publish your original app worldwide securely</p>
+            <h1 id="formTitle" class="text-xl font-extrabold text-emerald-400 gold-glow">Upload to ApkLayer</h1>
+            <p id="formSubTitle" class="text-xs text-amber-300/80 font-medium">Publish your original app worldwide securely</p>
         </div>
 
-        <form id="uploadForm" onsubmit="uploadApp(event)" class="space-y-4">
+        <!-- Google Login Section -->
+        <div id="loginSection" class="text-center py-6 space-y-4">
+            <p class="text-xs text-slate-300">Apni app secure rakhne aur manage karne ke liye Google se login karein:</p>
+            <button onclick="loginWithGoogle()" class="w-full py-3.5 bg-white hover:bg-slate-200 text-slate-900 rounded-2xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg cursor-pointer">
+                <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.19v3.15C3.17 21.31 7.24 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.19C.43 8.15 0 9.99 0 12s.43 3.85 1.19 5.4l4.08-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.24 0 3.17 2.69 1.19 6.6l4.08 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+                Sign in with Google
+            </button>
+        </div>
+
+        <!-- App Upload / Update Form -->
+        <form id="uploadForm" onsubmit="submitApp(event)" class="space-y-4 hidden">
+            <input type="hidden" id="editingAppId" value="">
+            
             <div>
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Name</label>
                 <input type="text" id="appName" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="My Original Game">
             </div>
             <div>
-                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">Package Name</label>
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">Package Name (Unique ID)</label>
                 <input type="text" id="packageName" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="com.myname.mygame">
             </div>
             <div>
@@ -113,10 +134,18 @@
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Description</label>
                 <textarea id="appDesc" rows="2" required class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm resize-none focus:outline-none" placeholder="Describe your game or app features..."></textarea>
             </div>
+
+            <!-- Play Store Copyright Check -->
+            <div class="p-3 bg-slate-950 rounded-xl border border-amber-500/30 space-y-2">
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400 font-bold">Play Store Availability Check</label>
+                <p class="text-[10px] text-slate-400">Agar app Play Store par pehle se available hai, toh copyright strike se bachne ke liye link dalein:</p>
+                <input type="url" id="playStoreCheckUrl" placeholder="Play Store Link (Optional)" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none">
+            </div>
             
             <div>
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Logo Image (Square)</label>
-                <input type="file" id="logoFile" accept="image/*" required class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-emerald-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-emerald-500 transition">
+                <input type="file" id="logoFile" accept="image/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-emerald-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-emerald-500 transition">
+                <p id="logoHint" class="text-[10px] text-slate-500 mt-1">Leave blank to keep existing logo during update.</p>
             </div>
 
             <div>
@@ -128,10 +157,11 @@
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">APK File OR Direct Link</label>
                 <input type="file" id="apkFile" accept=".apk" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-blue-500 mb-2">
                 <input type="url" id="directDownloadUrl" placeholder="Or Paste Direct URL (https://...)" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none mb-2">
-                <input type="text" id="manualFileSize" placeholder="Enter File Size manually (e.g. 45 MB, 120 MB)" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none">
+                <input type="text" id="manualFileSize" placeholder="Enter File Size manually (e.g. 45 MB)" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none">
+                <p class="text-[10px] text-slate-500 mt-1">Leave blank to keep existing file during update.</p>
             </div>
 
-            <!-- Native Banner Ad (Size input aur Publish button ke beech mein) -->
+            <!-- Native Banner Ad -->
             <div class="my-3 flex justify-center items-center bg-slate-950 p-2 rounded-xl border emerald-border overflow-hidden">
                 <script async="async" data-cfasync="false" src="https://pl31704671.profitableratecpmnetwork.com/767c7a84690ab4e360d426d902475103/invoke.js"></script>
                 <div id="container-767c7a84690ab4e360d426d902475103"></div>
@@ -140,13 +170,24 @@
             <div id="progressContainer" class="hidden text-center py-4 bg-slate-950 rounded-2xl border emerald-border space-y-2">
                 <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading Files to Worldwide Cloud...</p>
                 <p id="timerText" class="text-sm text-emerald-400 font-mono font-bold">Time Remaining: 05:00</p>
-                <p class="text-[11px] text-amber-300 font-semibold px-2">⚠️ Keep your phone awake! Do not let the screen go to sleep or close the page.</p>
+                <p class="text-[11px] text-amber-300 font-semibold px-2">⚠️ Keep your phone awake! Do not close the page.</p>
             </div>
 
-            <button type="submit" id="subBtn" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-500 hover:to-amber-500 rounded-2xl font-extrabold text-sm transition shadow-lg shadow-emerald-900/30 text-white cursor-pointer">
-                🚀 Publish App Globally
-            </button>
+            <div class="flex gap-2">
+                <button type="submit" id="subBtn" class="flex-1 py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-500 hover:to-amber-500 rounded-2xl font-extrabold text-sm transition shadow-lg shadow-emerald-900/30 text-white cursor-pointer">
+                    🚀 Publish App Globally
+                </button>
+                <button type="button" id="cancelEditBtn" onclick="cancelEdit()" class="hidden px-4 py-3.5 bg-slate-800 hover:bg-slate-700 rounded-2xl font-bold text-xs text-slate-300 transition">Cancel</button>
+            </div>
         </form>
+
+        <!-- My Uploaded Apps & Management Section -->
+        <div id="myAppsSection" class="hidden mt-6 pt-5 border-t border-slate-800 space-y-3">
+            <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">📦 Manage & Update Your Apps</h2>
+            <div id="userAppsList" class="space-y-2 max-h-60 overflow-y-auto text-xs">
+                <!-- Dynamic Apps List -->
+            </div>
+        </div>
 
         <div id="resultBox" class="hidden mt-6 p-4 bg-slate-950 rounded-2xl border emerald-border text-center space-y-3">
             <p class="text-xs text-emerald-400 font-bold">✅ App Live Worldwide for Everyone!</p>
@@ -165,6 +206,49 @@
         const IA_SECRET_KEY = "jyyV5luXiOGFzTCX";
         const FIREBASE_DB_URL = "https://apk-layer-default-rtdb.firebaseio.com/apps";
 
+        const firebaseConfig = { databaseURL: FIREBASE_DB_URL };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+
+        let currentUser = null;
+        let allAppsCache = {};
+
+        firebase.auth().onAuthStateChanged((user) => {
+            const loginSection = document.getElementById('loginSection');
+            const uploadForm = document.getElementById('uploadForm');
+            const myAppsSection = document.getElementById('myAppsSection');
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+
+            if (user) {
+                currentUser = user;
+                loginSection.classList.add('hidden');
+                uploadForm.classList.remove('hidden');
+                myAppsSection.classList.remove('hidden');
+                userInfo.classList.remove('hidden');
+                userInfo.classList.add('flex');
+                userName.innerText = user.displayName || user.email;
+                loadUserApps(user.uid);
+            } else {
+                currentUser = null;
+                loginSection.classList.remove('hidden');
+                uploadForm.classList.add('hidden');
+                myAppsSection.classList.add('hidden');
+                userInfo.classList.add('hidden');
+                userInfo.classList.remove('flex');
+            }
+        });
+
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).catch((error) => {
+                alert("Login Error: " + error.message);
+            });
+        }
+
+        function logoutUser() {
+            firebase.auth().signOut();
+        }
+
         function toggleMenu() {
             const drawer = document.getElementById('menuDrawer');
             const backdrop = document.getElementById('backdrop');
@@ -181,46 +265,103 @@
             }
         }
 
-        let touchStartX = 0;
-        window.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
+        async function loadUserApps(uid) {
+            const listContainer = document.getElementById('userAppsList');
+            listContainer.innerHTML = `<p class="text-slate-400 text-center py-2">Loading your apps...</p>`;
+            try {
+                let res = await fetch(`${FIREBASE_DB_URL}.json`);
+                let data = await res.json();
+                allAppsCache = data || {};
+                listContainer.innerHTML = "";
 
-        window.addEventListener('touchend', e => {
-            let touchEndX = e.changedTouches[0].screenX;
-            if (touchEndX - touchStartX > 80 && touchStartX < 50) {
-                const drawer = document.getElementById('menuDrawer');
-                if (drawer.classList.contains('-translate-x-full')) {
-                    toggleMenu();
+                let myAppsCount = 0;
+                for (let id in allAppsCache) {
+                    let app = allAppsCache[id];
+                    if (app.uid === uid) {
+                        myAppsCount++;
+                        let item = document.createElement('div');
+                        item.className = "p-2.5 bg-slate-950 rounded-xl border border-emerald-500/20 flex justify-between items-center gap-2";
+                        item.innerHTML = `
+                            <div class="truncate">
+                                <p class="font-bold text-emerald-300 truncate">${app.appName}</p>
+                                <p class="text-[10px] text-slate-400 font-mono">v${app.version} | ${app.packageName}</p>
+                            </div>
+                            <div class="flex gap-1.5 shrink-0">
+                                <button onclick="startEdit('${id}')" class="px-2.5 py-1 bg-amber-600/20 text-amber-400 hover:bg-amber-600 hover:text-white rounded-lg text-[10px] font-bold border border-amber-500/30 transition">Update</button>
+                                <button onclick="deleteApp('${id}')" class="px-2 py-1 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-lg text-[10px] font-bold border border-red-500/30 transition">Delete</button>
+                            </div>
+                        `;
+                        listContainer.appendChild(item);
+                    }
                 }
-            }
-        });
 
-        async function uploadApp(e) {
+                if (myAppsCount === 0) {
+                    listContainer.innerHTML = `<p class="text-slate-500 text-center py-2">No apps uploaded yet.</p>`;
+                }
+            } catch (e) {
+                listContainer.innerHTML = `<p class="text-red-400 text-center py-2">Failed to load apps.</p>`;
+            }
+        }
+
+        function startEdit(appId) {
+            let app = allAppsCache[appId];
+            if (!app) return;
+
+            document.getElementById('editingAppId').value = appId;
+            document.getElementById('appName').value = app.appName;
+            document.getElementById('packageName').value = app.packageName;
+            document.getElementById('packageName').disabled = true; // Package name cannot be changed
+            document.getElementById('version').value = app.version;
+            document.getElementById('appDesc').value = app.description;
+            document.getElementById('playStoreCheckUrl').value = app.playStoreUrl || '';
+            document.getElementById('directDownloadUrl').value = app.archiveUrl.startsWith('http') && !app.archiveUrl.includes('archive.org') ? app.archiveUrl : '';
+            
+            document.getElementById('formTitle').innerText = "Update Your App";
+            document.getElementById('formSubTitle').innerText = "Modify file, logo or details safely";
+            document.getElementById('subBtn').innerText = "💾 Save Updates";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            document.getElementById('editingAppId').value = "";
+            document.getElementById('packageName').disabled = false;
+            document.getElementById('uploadForm').reset();
+            document.getElementById('formTitle').innerText = "Upload to ApkLayer";
+            document.getElementById('formSubTitle').innerText = "Publish your original app worldwide securely";
+            document.getElementById('subBtn').innerText = "🚀 Publish App Globally";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
+
+        async function submitApp(e) {
             e.preventDefault();
+            if (!currentUser) return alert("Please login with Google first!");
             const status = document.getElementById('status');
             
+            const editingId = document.getElementById('editingAppId').value;
             const appName = document.getElementById('appName').value.trim();
             const packageName = document.getElementById('packageName').value.toLowerCase().replace(/[^a-z0-9_.]/g, '');
             const version = document.getElementById('version').value.trim();
             const description = document.getElementById('appDesc').value.trim();
+            const playStoreUrl = document.getElementById('playStoreCheckUrl').value.trim();
             
-            const blockedKeywords = ['freefire', 'pubg', 'bgmi', 'ffmax', 'mod', 'hack', 'cheat', 'tencent', 'garena'];
-            const checkString = (appName + " " + packageName + " " + description).toLowerCase();
-            
-            let isBlocked = false;
-            for (let word of blockedKeywords) {
-                if (checkString.includes(word)) {
-                    isBlocked = true;
-                    break;
+            // Duplicate Package Name Check (Agar naya upload hai)
+            if (!editingId) {
+                for (let id in allAppsCache) {
+                    if (allAppsCache[id].packageName === packageName) {
+                        alert(`❌ Error: Yeh package name (${packageName}) pehle se publish hai! Jab tak purana app delete nahi hoga, aap ise dobara upload nahi kar sakte.`);
+                        return;
+                    }
                 }
             }
 
-            if (isBlocked) {
-                status.innerText = "❌ Security Alert: Modified games, Free Fire, PUBG or hacked APKs are strictly prohibited!";
-                status.className = "mt-4 text-center text-xs font-medium text-red-400";
-                alert("Error: Third-party modified games or hacks are not allowed on ApkLayer!");
-                return;
+            const blockedKeywords = ['freefire', 'pubg', 'bgmi', 'ffmax', 'mod', 'hack', 'cheat', 'tencent', 'garena'];
+            const checkString = (appName + " " + packageName + " " + description).toLowerCase();
+            for (let word of blockedKeywords) {
+                if (checkString.includes(word)) {
+                    alert("Error: Third-party modified games or hacks are not allowed on ApkLayer!");
+                    return;
+                }
             }
 
             const btn = document.getElementById('subBtn');
@@ -234,8 +375,8 @@
             const directUrl = document.getElementById('directDownloadUrl').value.trim();
             const manualSize = document.getElementById('manualFileSize').value.trim();
 
-            if (!logoFile) return alert('Select Logo image!');
-            if (!apkFile && !directUrl) return alert('Select APK file or Direct URL!');
+            if (!editingId && !logoFile) return alert('Select Logo image!');
+            if (!editingId && !apkFile && !directUrl) return alert('Select APK file or Direct URL!');
 
             btn.disabled = true;
             status.innerText = "";
@@ -247,32 +388,33 @@
                 let minutes = Math.floor(timeLeft / 60);
                 let seconds = timeLeft % 60;
                 timerText.innerText = `Time Remaining: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                if (timeLeft > 0) {
-                    timeLeft--;
-                }
+                if (timeLeft > 0) timeLeft--;
             }, 1000);
 
             try {
-                const appId = Date.now().toString();
+                const appId = editingId ? editingId : Date.now().toString();
                 const identifier = `apklayer-${packageName.replace(/\./g, '_')}-${appId}`;
                 
-                status.innerText = "Uploading Logo to Cloud...";
-                await fetch(`https://s3.us.archive.org/${identifier}/logo.png`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `LOW ${IA_ACCESS_KEY}:${IA_SECRET_KEY}`,
-                        'Content-Type': logoFile.type,
-                        'x-archive-auto-make-bucket': '1'
-                    },
-                    body: logoFile
-                });
-                const logoUrl = `https://archive.org/download/${identifier}/logo.png`;
+                let logoUrl = editingId ? allAppsCache[editingId].logoUrl : "";
+                if (logoFile) {
+                    status.innerText = "Uploading New Logo to Cloud...";
+                    await fetch(`https://s3.us.archive.org/${identifier}/logo.png`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `LOW ${IA_ACCESS_KEY}:${IA_SECRET_KEY}`,
+                            'Content-Type': logoFile.type,
+                            'x-archive-auto-make-bucket': '1'
+                        },
+                        body: logoFile
+                    });
+                    logoUrl = `https://archive.org/download/${identifier}/logo.png`;
+                }
 
-                let screenshotsUrls = [];
+                let screenshotsUrls = editingId ? (allAppsCache[editingId].screenshots || []) : [];
                 if (screenshotFiles && screenshotFiles.length > 0) {
                     for (let i = 0; i < screenshotFiles.length; i++) {
                         let sFile = screenshotFiles[i];
-                        status.innerText = `Uploading Screenshot ${i + 1} of ${screenshotFiles.length}...`;
+                        status.innerText = `Uploading Screenshot ${i + 1}...`;
                         let sFileName = `screenshot_${i + 1}.png`;
                         await fetch(`https://s3.us.archive.org/${identifier}/${sFileName}`, {
                             method: 'PUT',
@@ -286,11 +428,11 @@
                     }
                 }
 
-                let archiveDownloadUrl = "";
-                let fileSize = "Web Link";
+                let archiveDownloadUrl = editingId ? allAppsCache[editingId].archiveUrl : "";
+                let fileSize = editingId ? allAppsCache[editingId].size : "Web Link";
 
                 if (apkFile) {
-                    status.innerText = "Uploading APK File to Internet Archive...";
+                    status.innerText = "Uploading New APK File to Internet Archive...";
                     await fetch(`https://s3.us.archive.org/${identifier}/${apkFile.name}`, {
                         method: 'PUT',
                         headers: {
@@ -301,19 +443,22 @@
                     });
                     archiveDownloadUrl = `https://archive.org/download/${identifier}/${apkFile.name}`;
                     fileSize = (apkFile.size / (1024*1024)).toFixed(1) + ' MB';
-                } else {
+                } else if (directUrl) {
                     archiveDownloadUrl = directUrl;
                     fileSize = manualSize ? manualSize : "Web Link";
                 }
 
-                status.innerText = "Registering on Global Server plotter...";
+                status.innerText = editingId ? "Updating App on Server..." : "Registering App on Server...";
 
-                const newAppObj = {
+                const appObj = {
                     id: appId,
+                    uid: currentUser.uid,
+                    developerEmail: currentUser.email,
                     appName: appName,
                     packageName: packageName,
                     version: version,
                     description: description,
+                    playStoreUrl: playStoreUrl,
                     logoUrl: logoUrl,
                     screenshots: screenshotsUrls,
                     archiveUrl: archiveDownloadUrl,
@@ -323,7 +468,7 @@
                 await fetch(`${FIREBASE_DB_URL}/${appId}.json`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newAppObj)
+                    body: JSON.stringify(appObj)
                 });
 
                 const storeUrl = "https://apklayer.sbs/";
@@ -332,7 +477,8 @@
                 document.getElementById('shareLink').value = appShareLink;
                 resultBox.classList.remove('hidden');
                 status.innerText = "";
-                document.getElementById('uploadForm').reset();
+                cancelEdit();
+                loadUserApps(currentUser.uid);
             } catch (err) {
                 status.innerText = "❌ Error: " + err.message;
                 status.className = "mt-4 text-center text-xs font-medium text-red-400";
@@ -340,6 +486,20 @@
                 clearInterval(timerInterval);
                 progressContainer.classList.add('hidden');
                 btn.disabled = false;
+            }
+        }
+
+        async function deleteApp(appId) {
+            if (confirm("Kya aap sach mein is app ko delete karna chahte hain? Delete karne ke baad is package name par naya app upload kiya ja sakega.")) {
+                try {
+                    await fetch(`${FIREBASE_DB_URL}/${appId}.json`, {
+                        method: 'DELETE'
+                    });
+                    alert("App successfully deleted!");
+                    loadUserApps(currentUser.uid);
+                } catch (e) {
+                    alert("Delete failed: " + e.message);
+                }
             }
         }
 
