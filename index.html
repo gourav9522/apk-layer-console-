@@ -212,6 +212,11 @@
         let currentUser = null;
         let allAppsCache = {};
 
+        // Check redirect result incase popup was blocked
+        firebase.auth().getRedirectResult().catch((error) => {
+            console.error("Redirect login error:", error.message);
+        });
+
         firebase.auth().onAuthStateChanged((user) => {
             const loginSection = document.getElementById('loginSection');
             const uploadForm = document.getElementById('uploadForm');
@@ -240,8 +245,12 @@
 
         function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
+            // Try popup first, fallback to redirect if popup fails/blocked
             firebase.auth().signInWithPopup(provider).catch((error) => {
-                alert("Login Error: " + error.message);
+                console.log("Popup blocked or failed, switching to redirect method...");
+                firebase.auth().signInWithRedirect(provider).catch((redirError) => {
+                    alert("Login Error: " + redirError.message);
+                });
             });
         }
 
@@ -310,7 +319,7 @@
             document.getElementById('editingAppId').value = appId;
             document.getElementById('appName').value = app.appName;
             document.getElementById('packageName').value = app.packageName;
-            document.getElementById('packageName').disabled = true; // Package name cannot be changed
+            document.getElementById('packageName').disabled = true;
             document.getElementById('version').value = app.version;
             document.getElementById('appDesc').value = app.description;
             document.getElementById('playStoreCheckUrl').value = app.playStoreUrl || '';
@@ -345,7 +354,6 @@
             const description = document.getElementById('appDesc').value.trim();
             const playStoreUrl = document.getElementById('playStoreCheckUrl').value.trim();
             
-            // Duplicate Package Name Check (Agar naya upload hai)
             if (!editingId) {
                 for (let id in allAppsCache) {
                     if (allAppsCache[id].packageName === packageName) {
