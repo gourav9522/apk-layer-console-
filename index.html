@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ApkLayer Console - Premium Publisher</title>
+    <title>ApkLayer Console - Secure Publisher</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .gold-glow {
@@ -49,8 +49,8 @@
         </div>
         <div class="flex items-center gap-2">
             <div id="userInfo" class="hidden items-center gap-2 text-xs">
-                <span id="displayDevCode" class="text-amber-400 font-bold"></span>
-                <button onclick="logoutDev()" class="px-2.5 py-1 bg-red-950/60 border border-red-500/30 rounded-lg text-red-300 hover:bg-red-900/40 transition">Switch Code</button>
+                <span id="displayDevName" class="text-amber-400 font-bold"></span>
+                <button onclick="logoutDev()" class="px-2.5 py-1 bg-red-950/60 border border-red-500/30 rounded-lg text-red-300 hover:bg-red-900/40 transition">Logout</button>
             </div>
             <a href="https://apklayer.sbs/" target="_blank" class="px-3 py-1.5 bg-emerald-950/60 border emerald-border rounded-xl text-xs font-bold text-emerald-300 hover:bg-emerald-900/40 transition">Store</a>
         </div>
@@ -71,8 +71,8 @@
                     <p class="text-[11px] text-slate-400">Only original apps allowed. Free Fire, PUBG, and third-party mods/hacks are strictly banned.</p>
                 </div>
                 <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/20">
-                    <p class="font-bold text-emerald-400 mb-1">🔑 Developer Code Policy:</p>
-                    <p class="text-[11px] text-slate-400">Apna unique Developer Code yaad rakhein. Isi code se aap apne sabhi uploaded apps ko manage aur update kar payenge.</p>
+                    <p class="font-bold text-emerald-400 mb-1">🔒 Security Policy:</p>
+                    <p class="text-[11px] text-slate-400">Apna Mobile Number aur Password surakshit rakhein. Isi se aap apne apps manage kar payenge.</p>
                 </div>
                 <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/20 space-y-1.5">
                     <p class="font-bold text-amber-400">📞 Support:</p>
@@ -101,13 +101,55 @@
             <p id="formSubTitle" class="text-xs text-amber-300/80 font-medium">Publish your original app worldwide securely</p>
         </div>
 
-        <!-- Developer Code Login Section -->
-        <div id="devCodeSection" class="text-center py-6 space-y-4">
-            <p class="text-xs text-slate-300">Apne apps ko manage aur update karne ke liye apna <b>Unique Developer Code</b> dalein:</p>
-            <input type="text" id="inputDevCode" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm text-center font-bold tracking-wider focus:outline-none uppercase" placeholder="E.G. GOURAV_GAMES">
-            <button onclick="verifyDevCode()" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-500 hover:to-amber-500 rounded-2xl font-bold text-sm transition shadow-lg text-white cursor-pointer">
-                Access Developer Console 🚀
-            </button>
+        <!-- Auth Choice Section (Login or Register) -->
+        <div id="authChoiceSection" class="text-center py-6 space-y-4">
+            <p class="text-xs text-slate-300">Apne developer account mein aage badhein:</p>
+            <div class="flex gap-3">
+                <button onclick="showLoginScreen()" class="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-bold text-sm transition shadow-lg text-white cursor-pointer">
+                    🔑 Login
+                </button>
+                <button onclick="showRegisterScreen()" class="flex-1 py-3.5 bg-amber-600 hover:bg-amber-500 rounded-2xl font-bold text-sm transition shadow-lg text-white cursor-pointer">
+                    ✨ Create Account
+                </button>
+            </div>
+        </div>
+
+        <!-- Login Form Section -->
+        <div id="loginScreen" class="hidden py-4 space-y-3">
+            <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider text-center">Developer Login</h2>
+            <div>
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">Mobile Number</label>
+                <input type="tel" id="loginMobile" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="Enter Mobile Number">
+            </div>
+            <div>
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">Password</label>
+                <input type="password" id="loginPassword" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="Enter Password">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="handleLogin()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-xs text-white transition">Login Now</button>
+                <button onclick="backToAuthChoice()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-xs text-slate-300 transition">Back</button>
+            </div>
+        </div>
+
+        <!-- Register Form Section -->
+        <div id="registerScreen" class="hidden py-4 space-y-3">
+            <h2 class="text-xs font-bold text-amber-400 uppercase tracking-wider text-center">Create New Developer Account</h2>
+            <div>
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">Unique Developer Name</label>
+                <input type="text" id="regName" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="e.g. GouravGames">
+            </div>
+            <div>
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">Mobile Number</label>
+                <input type="tel" id="regMobile" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="Enter Mobile Number">
+            </div>
+            <div>
+                <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">Password</label>
+                <input type="password" id="regPassword" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm focus:outline-none" placeholder="Create Password">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="handleRegister()" class="flex-1 py-3 bg-amber-600 hover:bg-amber-500 rounded-xl font-bold text-xs text-white transition">Register & Login</button>
+                <button onclick="backToAuthChoice()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-xs text-slate-300 transition">Back</button>
+            </div>
         </div>
 
         <!-- App Upload / Update Form -->
@@ -201,42 +243,122 @@
         const IA_ACCESS_KEY = "OLmzxUOSjra7c5Mh";
         const IA_SECRET_KEY = "jyyV5luXiOGFzTCX";
         const FIREBASE_DB_URL = "https://apk-layer-default-rtdb.firebaseio.com/apps";
+        const FIREBASE_USERS_URL = "https://apk-layer-default-rtdb.firebaseio.com/developers";
 
-        let currentDevCode = localStorage.getItem("apklayer_dev_code") || "";
+        let currentDev = JSON.parse(localStorage.getItem("apklayer_current_dev")) || null;
         let allAppsCache = {};
 
         window.onload = function() {
-            if (currentDevCode) {
-                document.getElementById('devCodeSection').classList.add('hidden');
-                document.getElementById('uploadForm').classList.remove('hidden');
-                document.getElementById('myAppsSection').classList.remove('hidden');
-                document.getElementById('userInfo').classList.remove('hidden');
-                document.getElementById('userInfo').classList.add('flex');
-                document.getElementById('displayDevCode').innerText = "Code: " + currentDevCode;
-                loadDevApps(currentDevCode);
+            if (currentDev) {
+                activeDashboard(currentDev.name, currentDev.mobile);
             }
         };
 
-        function verifyDevCode() {
-            const codeInput = document.getElementById('inputDevCode').value.trim().toUpperCase();
-            if (!codeInput) {
-                alert("Please enter a valid Developer Code!");
+        function showLoginScreen() {
+            document.getElementById('authChoiceSection').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        function showRegisterScreen() {
+            document.getElementById('authChoiceSection').classList.add('hidden');
+            document.getElementById('registerScreen').classList.remove('hidden');
+        }
+
+        function backToAuthChoice() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('authChoiceSection').classList.remove('hidden');
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('regName').value.trim();
+            const mobile = document.getElementById('regMobile').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+
+            if (!name || !mobile || !password) {
+                alert("Sabhi fields bharna zaroori hai!");
                 return;
             }
-            currentDevCode = codeInput;
-            localStorage.setItem("apklayer_dev_code", currentDevCode);
-            
-            document.getElementById('devCodeSection').classList.add('hidden');
+
+            try {
+                let res = await fetch(`${FIREBASE_USERS_URL}.json`);
+                let users = await res.json() || {};
+
+                // Check if mobile already exists
+                for (let id in users) {
+                    if (users[id].mobile === mobile) {
+                        alert("❌ Yeh mobile number pehle se registered hai! Please login karein.");
+                        return;
+                    }
+                }
+
+                const userId = Date.now().toString();
+                const newUser = { name, mobile, password };
+
+                await fetch(`${FIREBASE_USERS_URL}/${userId}.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newUser)
+                });
+
+                currentDev = { name, mobile };
+                localStorage.setItem("apklayer_current_dev", JSON.stringify(currentDev));
+                alert("Account successfully created!");
+                activeDashboard(name, mobile);
+            } catch (e) {
+                alert("Registration failed: " + e.message);
+            }
+        }
+
+        async function handleLogin() {
+            const mobile = document.getElementById('loginMobile').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!mobile || !password) {
+                alert("Mobile number aur password dalein!");
+                return;
+            }
+
+            try {
+                let res = await fetch(`${FIREBASE_USERS_URL}.json`);
+                let users = await res.json() || {};
+
+                let foundUser = null;
+                for (let id in users) {
+                    if (users[id].mobile === mobile && users[id].password === password) {
+                        foundUser = users[id];
+                        break;
+                    }
+                }
+
+                if (!foundUser) {
+                    alert("❌ Invalid Mobile Number or Password!");
+                    return;
+                }
+
+                currentDev = { name: foundUser.name, mobile: foundUser.mobile };
+                localStorage.setItem("apklayer_current_dev", JSON.stringify(currentDev));
+                alert("Login successful!");
+                activeDashboard(foundUser.name, foundUser.mobile);
+            } catch (e) {
+                alert("Login failed: " + e.message);
+            }
+        }
+
+        function activeDashboard(name, mobile) {
+            document.getElementById('authChoiceSection').classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('registerScreen').classList.add('hidden');
             document.getElementById('uploadForm').classList.remove('hidden');
             document.getElementById('myAppsSection').classList.remove('hidden');
             document.getElementById('userInfo').classList.remove('hidden');
             document.getElementById('userInfo').classList.add('flex');
-            document.getElementById('displayDevCode').innerText = "Code: " + currentDevCode;
-            loadDevApps(currentDevCode);
+            document.getElementById('displayDevName').innerText = `👤 ${name}`;
+            loadDevApps(mobile);
         }
 
         function logoutDev() {
-            localStorage.removeItem("apklayer_dev_code");
+            localStorage.removeItem("apklayer_current_dev");
             location.reload();
         }
 
@@ -256,7 +378,7 @@
             }
         }
 
-        async function loadDevApps(devCode) {
+        async function loadDevApps(mobile) {
             const listContainer = document.getElementById('userAppsList');
             listContainer.innerHTML = `<p class="text-slate-400 text-center py-2">Loading your apps...</p>`;
             try {
@@ -268,7 +390,7 @@
                 let myAppsCount = 0;
                 for (let id in allAppsCache) {
                     let app = allAppsCache[id];
-                    if (app.devCode === devCode) {
+                    if (app.devMobile === mobile) {
                         myAppsCount++;
                         let item = document.createElement('div');
                         item.className = "p-2.5 bg-slate-950 rounded-xl border border-emerald-500/20 flex justify-between items-center gap-2";
@@ -287,7 +409,7 @@
                 }
 
                 if (myAppsCount === 0) {
-                    listContainer.innerHTML = `<p class="text-slate-500 text-center py-2">No apps uploaded under this code yet.</p>`;
+                    listContainer.innerHTML = `<p class="text-slate-500 text-center py-2">No apps uploaded yet.</p>`;
                 }
             } catch (e) {
                 listContainer.innerHTML = `<p class="text-red-400 text-center py-2">Failed to load apps.</p>`;
@@ -326,7 +448,7 @@
 
         async function submitApp(e) {
             e.preventDefault();
-            if (!currentDevCode) return alert("Please enter Developer Code first!");
+            if (!currentDev) return alert("Please login first!");
             const status = document.getElementById('status');
             
             const editingId = document.getElementById('editingAppId').value;
@@ -442,7 +564,8 @@
 
                 const appObj = {
                     id: appId,
-                    devCode: currentDevCode,
+                    devMobile: currentDev.mobile,
+                    devName: currentDev.name,
                     appName: appName,
                     packageName: packageName,
                     version: version,
@@ -467,7 +590,7 @@
                 resultBox.classList.remove('hidden');
                 status.innerText = "";
                 cancelEdit();
-                loadDevApps(currentDevCode);
+                loadDevApps(currentDev.mobile);
             } catch (err) {
                 status.innerText = "❌ Error: " + err.message;
                 status.className = "mt-4 text-center text-xs font-medium text-red-400";
@@ -485,7 +608,7 @@
                         method: 'DELETE'
                     });
                     alert("App successfully deleted!");
-                    loadDevApps(currentDevCode);
+                    loadDevApps(currentDev.mobile);
                 } catch (e) {
                     alert("Delete failed: " + e.message);
                 }
