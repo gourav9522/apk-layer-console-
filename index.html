@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ApkLayer Console - Premium Publisher</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Firebase App & Auth SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <style>
         .gold-glow {
             text-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
@@ -26,7 +23,7 @@
 </head>
 <body class="bg-slate-950 text-white min-h-screen flex flex-col items-center justify-center p-4 relative overflow-x-hidden pt-20">
 
-    <!-- Top Banner Ad (Sabse Upar) -->
+    <!-- Top Banner Ad -->
     <div class="absolute top-0 left-0 w-full bg-slate-900/90 py-1.5 flex justify-center items-center z-40 border-b border-emerald-500/20 overflow-hidden">
         <script>
           atOptions = {
@@ -52,8 +49,8 @@
         </div>
         <div class="flex items-center gap-2">
             <div id="userInfo" class="hidden items-center gap-2 text-xs">
-                <span id="userName" class="text-slate-300 font-semibold hidden md:inline"></span>
-                <button onclick="logoutUser()" class="px-2.5 py-1 bg-red-950/60 border border-red-500/30 rounded-lg text-red-300 hover:bg-red-900/40 transition">Logout</button>
+                <span id="displayDevCode" class="text-amber-400 font-bold"></span>
+                <button onclick="logoutDev()" class="px-2.5 py-1 bg-red-950/60 border border-red-500/30 rounded-lg text-red-300 hover:bg-red-900/40 transition">Switch Code</button>
             </div>
             <a href="https://apklayer.sbs/" target="_blank" class="px-3 py-1.5 bg-emerald-950/60 border emerald-border rounded-xl text-xs font-bold text-emerald-300 hover:bg-emerald-900/40 transition">Store</a>
         </div>
@@ -71,16 +68,15 @@
             <div class="space-y-4 text-xs text-slate-300">
                 <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/20">
                     <p class="font-bold text-amber-400 mb-1">📋 Rules & Criteria:</p>
-                    <p class="text-[11px] text-slate-400">Only original 3D games or apps are allowed. Third-party mods, hacks, Free Fire, and PUBG are strictly banned.</p>
+                    <p class="text-[11px] text-slate-400">Only original apps allowed. Free Fire, PUBG, and third-party mods/hacks are strictly banned.</p>
                 </div>
                 <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/20">
-                    <p class="font-bold text-emerald-400 mb-1">🛡️ Anti-Duplicate & Update Policy:</p>
-                    <p class="text-[11px] text-slate-400">Ek package name ka app pehle se publish hone par naya upload nahi hoga jab tak purana delete na ho. Aap apne dashboard se kabhi bhi file/logo update kar sakte hain.</p>
+                    <p class="font-bold text-emerald-400 mb-1">🔑 Developer Code Policy:</p>
+                    <p class="text-[11px] text-slate-400">Apna unique Developer Code yaad rakhein. Isi code se aap apne sabhi uploaded apps ko manage aur update kar payenge.</p>
                 </div>
                 <div class="p-3 bg-slate-950 rounded-xl border border-emerald-500/20 space-y-1.5">
-                    <p class="font-bold text-amber-400">📞 Contact & Support:</p>
-                    <p class="text-[11px] text-red-400 font-semibold">⚠️ Contact us on official Facebook before uploading!</p>
-                    <a href="https://www.facebook.com/share/1C888z72hu/" target="_blank" class="block text-blue-400 underline font-bold mt-1">Official Facebook</a>
+                    <p class="font-bold text-amber-400">📞 Support:</p>
+                    <a href="https://www.facebook.com/share/1C888z72hu/" target="_blank" class="block text-blue-400 underline font-bold">Official Facebook</a>
                     <p class="text-[11px] text-amber-300 font-mono">apklayer@gmail.com</p>
                 </div>
             </div>
@@ -105,12 +101,12 @@
             <p id="formSubTitle" class="text-xs text-amber-300/80 font-medium">Publish your original app worldwide securely</p>
         </div>
 
-        <!-- Google Login Section -->
-        <div id="loginSection" class="text-center py-6 space-y-4">
-            <p class="text-xs text-slate-300">Apni app secure rakhne aur manage karne ke liye Google se login karein:</p>
-            <button onclick="loginWithGoogle()" class="w-full py-3.5 bg-white hover:bg-slate-200 text-slate-900 rounded-2xl font-bold text-sm transition flex items-center justify-center gap-2 shadow-lg cursor-pointer">
-                <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.19v3.15C3.17 21.31 7.24 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.19C.43 8.15 0 9.99 0 12s.43 3.85 1.19 5.4l4.08-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.24 0 3.17 2.69 1.19 6.6l4.08 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
-                Sign in with Google
+        <!-- Developer Code Login Section -->
+        <div id="devCodeSection" class="text-center py-6 space-y-4">
+            <p class="text-xs text-slate-300">Apne apps ko manage aur update karne ke liye apna <b>Unique Developer Code</b> dalein:</p>
+            <input type="text" id="inputDevCode" class="w-full p-3 rounded-xl bg-slate-950 border emerald-border text-white text-sm text-center font-bold tracking-wider focus:outline-none uppercase" placeholder="E.G. GOURAV_GAMES">
+            <button onclick="verifyDevCode()" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-500 hover:to-amber-500 rounded-2xl font-bold text-sm transition shadow-lg text-white cursor-pointer">
+                Access Developer Console 🚀
             </button>
         </div>
 
@@ -138,14 +134,14 @@
             <!-- Play Store Copyright Check -->
             <div class="p-3 bg-slate-950 rounded-xl border border-amber-500/30 space-y-2">
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400 font-bold">Play Store Availability Check</label>
-                <p class="text-[10px] text-slate-400">Agar app Play Store par pehle se available hai, toh copyright strike se bachne ke liye link dalein:</p>
+                <p class="text-[10px] text-slate-400">Agar app Play Store par pehle se available hai, toh link dalein:</p>
                 <input type="url" id="playStoreCheckUrl" placeholder="Play Store Link (Optional)" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none">
             </div>
             
             <div>
                 <label class="block text-[11px] uppercase tracking-wider text-amber-400/90 font-bold mb-1">App Logo Image (Square)</label>
                 <input type="file" id="logoFile" accept="image/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-emerald-600 file:text-white file:font-bold file:cursor-pointer hover:file:bg-emerald-500 transition">
-                <p id="logoHint" class="text-[10px] text-slate-500 mt-1">Leave blank to keep existing logo during update.</p>
+                <p class="text-[10px] text-slate-500 mt-1">Leave blank to keep existing logo during update.</p>
             </div>
 
             <div>
@@ -168,13 +164,13 @@
             </div>
 
             <div id="progressContainer" class="hidden text-center py-4 bg-slate-950 rounded-2xl border emerald-border space-y-2">
-                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading Files to Worldwide Cloud...</p>
+                <p id="progressText" class="text-xs text-amber-400 font-bold">Uploading Files to Cloud...</p>
                 <p id="timerText" class="text-sm text-emerald-400 font-mono font-bold">Time Remaining: 05:00</p>
                 <p class="text-[11px] text-amber-300 font-semibold px-2">⚠️ Keep your phone awake! Do not close the page.</p>
             </div>
 
             <div class="flex gap-2">
-                <button type="submit" id="subBtn" class="flex-1 py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-500 hover:to-amber-500 rounded-2xl font-extrabold text-sm transition shadow-lg shadow-emerald-900/30 text-white cursor-pointer">
+                <button type="submit" id="subBtn" class="flex-1 py-3.5 bg-gradient-to-r from-emerald-600 to-amber-600 hover:from-emerald-500 hover:to-amber-500 rounded-2xl font-extrabold text-sm transition shadow-lg text-white cursor-pointer">
                     🚀 Publish App Globally
                 </button>
                 <button type="button" id="cancelEditBtn" onclick="cancelEdit()" class="hidden px-4 py-3.5 bg-slate-800 hover:bg-slate-700 rounded-2xl font-bold text-xs text-slate-300 transition">Cancel</button>
@@ -183,7 +179,7 @@
 
         <!-- My Uploaded Apps & Management Section -->
         <div id="myAppsSection" class="hidden mt-6 pt-5 border-t border-slate-800 space-y-3">
-            <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">📦 Manage & Update Your Apps</h2>
+            <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">📦 Your Apps Dashboard</h2>
             <div id="userAppsList" class="space-y-2 max-h-60 overflow-y-auto text-xs">
                 <!-- Dynamic Apps List -->
             </div>
@@ -206,56 +202,42 @@
         const IA_SECRET_KEY = "jyyV5luXiOGFzTCX";
         const FIREBASE_DB_URL = "https://apk-layer-default-rtdb.firebaseio.com/apps";
 
-        const firebaseConfig = { databaseURL: FIREBASE_DB_URL };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-
-        let currentUser = null;
+        let currentDevCode = localStorage.getItem("apklayer_dev_code") || "";
         let allAppsCache = {};
 
-        // Check redirect result incase popup was blocked
-        firebase.auth().getRedirectResult().catch((error) => {
-            console.error("Redirect login error:", error.message);
-        });
-
-        firebase.auth().onAuthStateChanged((user) => {
-            const loginSection = document.getElementById('loginSection');
-            const uploadForm = document.getElementById('uploadForm');
-            const myAppsSection = document.getElementById('myAppsSection');
-            const userInfo = document.getElementById('userInfo');
-            const userName = document.getElementById('userName');
-
-            if (user) {
-                currentUser = user;
-                loginSection.classList.add('hidden');
-                uploadForm.classList.remove('hidden');
-                myAppsSection.classList.remove('hidden');
-                userInfo.classList.remove('hidden');
-                userInfo.classList.add('flex');
-                userName.innerText = user.displayName || user.email;
-                loadUserApps(user.uid);
-            } else {
-                currentUser = null;
-                loginSection.classList.remove('hidden');
-                uploadForm.classList.add('hidden');
-                myAppsSection.classList.add('hidden');
-                userInfo.classList.add('hidden');
-                userInfo.classList.remove('flex');
+        window.onload = function() {
+            if (currentDevCode) {
+                document.getElementById('devCodeSection').classList.add('hidden');
+                document.getElementById('uploadForm').classList.remove('hidden');
+                document.getElementById('myAppsSection').classList.remove('hidden');
+                document.getElementById('userInfo').classList.remove('hidden');
+                document.getElementById('userInfo').classList.add('flex');
+                document.getElementById('displayDevCode').innerText = "Code: " + currentDevCode;
+                loadDevApps(currentDevCode);
             }
-        });
+        };
 
-        function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            // Try popup first, fallback to redirect if popup fails/blocked
-            firebase.auth().signInWithPopup(provider).catch((error) => {
-                console.log("Popup blocked or failed, switching to redirect method...");
-                firebase.auth().signInWithRedirect(provider).catch((redirError) => {
-                    alert("Login Error: " + redirError.message);
-                });
-            });
+        function verifyDevCode() {
+            const codeInput = document.getElementById('inputDevCode').value.trim().toUpperCase();
+            if (!codeInput) {
+                alert("Please enter a valid Developer Code!");
+                return;
+            }
+            currentDevCode = codeInput;
+            localStorage.setItem("apklayer_dev_code", currentDevCode);
+            
+            document.getElementById('devCodeSection').classList.add('hidden');
+            document.getElementById('uploadForm').classList.remove('hidden');
+            document.getElementById('myAppsSection').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('flex');
+            document.getElementById('displayDevCode').innerText = "Code: " + currentDevCode;
+            loadDevApps(currentDevCode);
         }
 
-        function logoutUser() {
-            firebase.auth().signOut();
+        function logoutDev() {
+            localStorage.removeItem("apklayer_dev_code");
+            location.reload();
         }
 
         function toggleMenu() {
@@ -274,7 +256,7 @@
             }
         }
 
-        async function loadUserApps(uid) {
+        async function loadDevApps(devCode) {
             const listContainer = document.getElementById('userAppsList');
             listContainer.innerHTML = `<p class="text-slate-400 text-center py-2">Loading your apps...</p>`;
             try {
@@ -286,7 +268,7 @@
                 let myAppsCount = 0;
                 for (let id in allAppsCache) {
                     let app = allAppsCache[id];
-                    if (app.uid === uid) {
+                    if (app.devCode === devCode) {
                         myAppsCount++;
                         let item = document.createElement('div');
                         item.className = "p-2.5 bg-slate-950 rounded-xl border border-emerald-500/20 flex justify-between items-center gap-2";
@@ -305,7 +287,7 @@
                 }
 
                 if (myAppsCount === 0) {
-                    listContainer.innerHTML = `<p class="text-slate-500 text-center py-2">No apps uploaded yet.</p>`;
+                    listContainer.innerHTML = `<p class="text-slate-500 text-center py-2">No apps uploaded under this code yet.</p>`;
                 }
             } catch (e) {
                 listContainer.innerHTML = `<p class="text-red-400 text-center py-2">Failed to load apps.</p>`;
@@ -344,7 +326,7 @@
 
         async function submitApp(e) {
             e.preventDefault();
-            if (!currentUser) return alert("Please login with Google first!");
+            if (!currentDevCode) return alert("Please enter Developer Code first!");
             const status = document.getElementById('status');
             
             const editingId = document.getElementById('editingAppId').value;
@@ -460,8 +442,7 @@
 
                 const appObj = {
                     id: appId,
-                    uid: currentUser.uid,
-                    developerEmail: currentUser.email,
+                    devCode: currentDevCode,
                     appName: appName,
                     packageName: packageName,
                     version: version,
@@ -486,7 +467,7 @@
                 resultBox.classList.remove('hidden');
                 status.innerText = "";
                 cancelEdit();
-                loadUserApps(currentUser.uid);
+                loadDevApps(currentDevCode);
             } catch (err) {
                 status.innerText = "❌ Error: " + err.message;
                 status.className = "mt-4 text-center text-xs font-medium text-red-400";
@@ -504,7 +485,7 @@
                         method: 'DELETE'
                     });
                     alert("App successfully deleted!");
-                    loadUserApps(currentUser.uid);
+                    loadDevApps(currentDevCode);
                 } catch (e) {
                     alert("Delete failed: " + e.message);
                 }
